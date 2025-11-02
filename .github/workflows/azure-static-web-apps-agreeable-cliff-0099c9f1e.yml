@@ -15,23 +15,22 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     permissions:
-       id-token: write
-       contents: read
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: true
-          lfs: false
+      id-token: write
+      contents: read
 
-      - name: Deploy Static Web App
-        id: builddeploy
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy Static Web App (No Build)
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AGREEABLE_CLIFF_0099C9F1E }}
           action: "upload"
-          app_location: "/"         # Path to your website's files
-          output_location: "/"      # Same directory (no build)
-          skip_app_build: true      # ✅ skip Oryx build process
+          app_location: "/"           # folder where your index.html exists
+          output_location: "/"        # same directory (no build output)
+          skip_app_build: "true"      # ✅ MUST be a string for YAML to interpret properly
+          skip_api_build: "true"      # ✅ also skip API build if any
           
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
@@ -39,7 +38,6 @@ jobs:
     name: Close Pull Request Job
     steps:
       - name: Close Pull Request
-        id: closepullrequest
         uses: Azure/static-web-apps-deploy@v1
         with:
           action: "close"
